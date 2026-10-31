@@ -1,19 +1,46 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diapasón y Acordes de Guitarra</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f9; color: #333; margin-top: 50px; }
-        h1 { color: #2c3e50; }
-        .container { background: white; padding: 20px; border-radius: 8px; display: inline-block; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Diapasón de Guitarra y Acordes</h1>
-        <p>¡Tu aplicación de guitarra ya está publicada correctamente en la web!</p>
-    </div>
-</body>
-</html>
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diapasón y acordes por grados</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: panel de controles arriba, diapasón con scroll lateral en móvil, rejilla de fichas de acorde debajo. */
+:root{
+  --bg:#f6f4ef; --panel:#ffffff; --fg:#23211c; --muted:#6b675d; --line:#d9d5c9; --line-strong:#b9b3a3;
+  --wood:#efe9da; --string:#8c8677; --nut:#23211c; --accent:#1c8a6e; --zone:#e6dfc9;
+  --d0-bg:#fbd9cf; --d0-bd:#c4452a; --d0-tx:#6b1f0f;
+  --d2-bg:#f8d3e4; --d2-bd:#b83a7b; --d2-tx:#6a1840;
+  --d4-bg:#c6ebe0; --d4-bd:#1c8a6e; --d4-tx:#0b4a39;
+  --d5-bg:#cfe1f7; --d5-bd:#2f6db5; --d5-tx:#123a68;
+  --d7-bg:#dcd6f5; --d7-bd:#6552b8; --d7-tx:#2f2377;
+  --d9-bg:#f6e2b0; --d9-bd:#b27a10; --d9-tx:#5e3d04;
+  --d11-bg:#dedcd6; --d11-bd:#7b786f; --d11-tx:#3a3833;
+  --display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#17160f; --panel:#201e16; --fg:#efeadb; --muted:#a9a393; --line:#3a372b; --line-strong:#58533f;
+  --wood:#262318; --string:#8f8978; --nut:#efeadb; --accent:#4fc7a2; --zone:#34301f;
+  --d0-bg:#5a2a20; --d0-bd:#ee8a72; --d0-tx:#ffd9cf;
+  --d2-bg:#55233f; --d2-bd:#ec7fb2; --d2-tx:#ffd3e6;
+  --d4-bg:#17463a; --d4-bd:#4fc7a2; --d4-tx:#c8f3e5;
+  --d5-bg:#1d3a5e; --d5-bd:#6ea8ec; --d5-tx:#d2e5fb;
+  --d7-bg:#362e63; --d7-bd:#a496ee; --d7-tx:#e0dbfb;
+  --d9-bg:#55400f; --d9-bd:#e1ad3d; --d9-tx:#fbe9b8;
+  --d11-bg:#3a3830; --d11-bd:#a29e92; --d11-tx:#e4e1d8;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#17160f; --panel:#201e16; --fg:#efeadb; --muted:#a9a393; --line:#3a372b; --line-strong:#58533f;
+  --wood:#262318; --string:#8f8978; --nut:#efeadb; --accent:#4fc7a2; --zone:#34301f;
+  --d0-bg:#5a2a20; --d0-bd:#ee8a72; --d0-tx:#ffd9cf;
+  --d2-bg:#55233f; --d2-bd:#ec7fb2; --d2-tx:#ffd3e6;
+  --d4-bg:#17463a; --d4-bd:#4fc7a2; --d4-tx:#c8f3e5;
+  --d5-bg:#1d3a5e; --d5-bd:#6ea8ec; --d5-tx:#d2e5fb;
+  --d7-bg:#362e63; --d7-bd:#a496ee; --d7-tx:#e0dbfb;
+  --d9-bg:#55400f; --d9-bd:#e1ad3d; --d9-tx:#fbe9b8;
+  --d11-bg:#3a3830; --d11-bd:#a29e92; --d11-tx:#e4e1d8;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-block:24px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px
