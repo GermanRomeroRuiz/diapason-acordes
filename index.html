@@ -43,4 +43,258 @@
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;
-  padding-block:24px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px
+  padding-block:24px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(24px,5vw,34px);line-height:1.1;margin:0;text-wrap:balance;letter-spacing:-0.01em}
+.lead{margin:6px 0 0;color:var(--muted);max-width:62ch}
+h2{font-family:var(--display);font-weight:600;font-size:19px;margin:0 0 4px;text-wrap:balance}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.controls{display:flex;flex-wrap:wrap;gap:14px 24px}
+.group{display:flex;flex-wrap:wrap;align-items:center;gap:8px;min-width:0}
+.group>span{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:8px;overflow:hidden}
+.seg button{font:inherit;font-size:14px;background:transparent;color:var(--fg);border:0;border-right:1px solid var(--line-strong);padding:7px 12px;cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg);font-weight:500}
+select{font:inherit;font-size:14px;color:var(--fg);background:var(--panel);border:1px solid var(--line-strong);border-radius:8px;padding:7px 10px}
+button:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.status{margin:0;color:var(--muted);font-size:14px}
+.neckwrap{overflow-x:auto;border-radius:8px;background:var(--wood);border:1px solid var(--line)}
+.neckwrap svg{display:block;min-width:640px;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:0;padding:0;list-style:none;font-size:13px}
+.legend li{display:flex;align-items:center;gap:7px}
+.sw{width:22px;height:22px;border-radius:50%;border:2px solid;display:grid;place-items:center;font-size:10px;font-weight:500;flex:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.card{border:1px solid var(--line);border-radius:10px;padding:10px 10px 9px;background:var(--bg);min-width:0}
+.card header{display:flex;align-items:baseline;justify-content:space-between;gap:6px}
+.card .rn{font-family:var(--display);font-weight:700;font-size:15px}
+.card .nm{font-size:13px;color:var(--muted)}
+.card svg{display:block;width:100%;height:auto;margin:4px 0 2px}
+.card .notes{font-family:var(--mono);font-size:12px;color:var(--fg);margin:0}
+.card .root{font-size:11px;color:var(--muted);margin:2px 0 0}
+.keyline{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);margin:0}
+.note{font-size:14px;color:var(--muted);margin:0;max-width:70ch}
+@media (max-width:520px){.seg button{padding:7px 9px;font-size:13px}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div>
+    <h1>Diapasón y acordes por grados</h1>
+    <p class="lead">Elige la tónica y mira dónde caen los grados de la escala mayor en el mástil, con el acorde que corresponde a cada uno y cómo se toca.</p>
+  </div>
+
+  <section class="panel" aria-label="Diapasón">
+    <div class="controls">
+      <div class="group"><span>Tónica</span><select id="key" aria-label="Tónica"></select></div>
+      <div class="group"><span>En la cuerda</span>
+        <div class="seg" role="group" aria-label="Cuerda de la tónica">
+          <button id="s6" type="button" aria-pressed="false">6ª (Mi grave)</button>
+          <button id="s5" type="button" aria-pressed="true">5ª (La)</button>
+        </div></div>
+      <div class="group"><span>Mostrar</span>
+        <div class="seg" role="group" aria-label="Qué mostrar en cada nota">
+          <button id="m1" type="button" aria-pressed="false">Grado</button>
+          <button id="m2" type="button" aria-pressed="false">Nota</button>
+          <button id="m3" type="button" aria-pressed="true">Acorde</button>
+        </div></div>
+      <div class="group"><span>Grados</span>
+        <div class="seg" role="group" aria-label="Grados a mostrar">
+          <button id="f1" type="button" aria-pressed="false">1, 3, 4, 5, 6</button>
+          <button id="f2" type="button" aria-pressed="true">Escala completa</button>
+        </div></div>
+    </div>
+    <p class="status" id="info"></p>
+    <div class="neckwrap"><svg id="neck" viewBox="0 0 680 212" role="img" aria-label="Diapasón con los grados de la escala mayor"></svg></div>
+    <ul class="legend" id="legend"></ul>
+  </section>
+
+  <section class="panel" aria-label="Acordes de cada grado">
+    <div>
+      <h2>Cómo se toca el acorde de cada grado</h2>
+      <p class="note" id="info2"></p>
+    </div>
+    <div class="group"><span>Posición de los acordes</span>
+      <div class="seg" role="group" aria-label="Posición de los acordes">
+        <button id="p1" type="button" aria-pressed="true">Cerca de la tónica</button>
+        <button id="p2" type="button" aria-pressed="false">Misma cuerda que la tónica</button>
+      </div></div>
+    <div class="cards" id="cards"></div>
+    <p class="keyline">
+      <span><b style="color:var(--d0-bd)">●</b> Fundamental</span>
+      <span><b style="color:var(--d4-bd)">●</b> Tercera</span>
+      <span><b style="color:var(--d7-bd)">●</b> Quinta</span>
+      <span>x = no tocar</span><span>o = cuerda al aire</span><span>tr. = traste donde va la cejilla</span>
+    </p>
+    <p class="note">El acorde del 7º grado (disminuido) tiene su propia forma, que no es la de Mi ni la de La: se toca con tres trastes seguidos y sin cejilla. En la práctica se sustituye muchas veces por el V7.</p>
+  </section>
+</div>
+
+<script>
+var names=['Do','Do#','Re','Re#','Mi','Fa','Fa#','Sol','Sol#','La','La#','Si'];
+var letters=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+var open=[4,11,7,2,9,4];
+var openDown=[4,9,2,7,11,4];
+var DIM='°';
+var degs={
+0:['1','I','',''],
+2:['2','ii','m',' m'],
+4:['3','iii','m',' m'],
+5:['4','IV','',''],
+7:['5','V','',''],
+9:['6','vi','m',' m'],
+11:['7','vii',DIM,' dim']};
+var shapes={
+6:{'':[0,2,2,1,0,0],'m':[0,2,2,0,0,0]},
+5:{'':[null,0,2,2,2,0],'m':[null,0,2,2,1,0]}};
+shapes[6][DIM]=[0,1,2,0,null,null];
+shapes[5][DIM]=[null,0,1,2,1,null];
+var st={key:0,str:4,mode:'chord',full:true,near:true};
+var X0=50,FW=37,Y0=22,SP=30,NF=16;
+var sel=document.getElementById('key');
+names.forEach(function(n,i){var o=document.createElement('option');o.value=i;o.textContent=n;sel.appendChild(o);});
+function fx(f){return f===0?32:X0+(f-0.5)*FW;}
+function cv(d,p){return 'var(--d'+d+'-'+p+')';}
+function order(){return st.full?[0,2,4,5,7,9,11]:[0,4,5,7,9];}
+function tonicFret(){return ((st.key-open[st.str])%12+12)%12;}
+function setPressed(id,on){document.getElementById(id).setAttribute('aria-pressed',on?'true':'false');}
+
+function pick(rp){
+  var rf=tonicFret();
+  var selS=st.str===5?6:5;
+  if(!st.near){
+    var b=selS===6?4:9;
+    return {s:selS,r:((rp-b)%12+12)%12};
+  }
+  var best=null;
+  [6,5].forEach(function(s){
+    var b=s===6?4:9;
+    var r=((rp-b)%12+12)%12;
+    [r,r+12].forEach(function(r0){
+      if(r0>14)return;
+      var dist=Math.abs(r0-rf)-(r0===0?1:0)+(s===selS?0:0.01);
+      if(!best||dist<best.d)best={s:s,r:r0,d:dist};
+    });
+  });
+  return best;
+}
+
+function drawNeck(){
+  var rf=tonicFret();
+  var lo=Math.max(0,rf-2),hi=Math.min(NF,rf+4);
+  var s='';
+  var wx1=lo===0?18:X0+(lo-1)*FW,wx2=X0+hi*FW;
+  s+='<rect x="'+wx1+'" y="'+(Y0-14)+'" width="'+(wx2-wx1)+'" height="'+(5*SP+28)+'" rx="4" style="fill:var(--zone)"/>';
+  for(var f=1;f<=NF;f++){s+='<line x1="'+(X0+f*FW)+'" y1="'+Y0+'" x2="'+(X0+f*FW)+'" y2="'+(Y0+5*SP)+'" style="stroke:var(--line-strong)" stroke-width="1"/>';}
+  s+='<line x1="'+X0+'" y1="'+(Y0-1)+'" x2="'+X0+'" y2="'+(Y0+5*SP+1)+'" style="stroke:var(--nut)" stroke-width="4"/>';
+  for(var i=0;i<6;i++){
+    var y=Y0+i*SP;
+    s+='<line x1="'+X0+'" y1="'+y+'" x2="'+(X0+NF*FW)+'" y2="'+y+'" style="stroke:var(--string)" stroke-width="'+(1+i*0.35)+'"/>';
+    var isRoot=(5-i)===st.str;
+    s+='<text x="6" y="'+(y+4)+'" font-size="12" style="fill:var(--'+(isRoot?'fg':'muted')+')" font-weight="'+(isRoot?600:400)+'">'+(i+1)+'ª</text>';
+  }
+  for(var f2=1;f2<=NF;f2++){
+    var em=[3,5,7,9,12,15].indexOf(f2)>-1;
+    s+='<text x="'+fx(f2)+'" y="'+(Y0+5*SP+30)+'" font-size="11" text-anchor="middle" style="fill:var(--'+(em?'fg':'muted')+');font-family:var(--mono)">'+f2+'</text>';
+  }
+  for(var i2=0;i2<6;i2++){
+    var yy=Y0+i2*SP;
+    for(var f3=0;f3<=NF;f3++){
+      var pc=(open[i2]+f3)%12;
+      var d=((pc-st.key)%12+12)%12;
+      var info=degs[d];
+      if(!info)continue;
+      if(!st.full&&(d===2||d===11))continue;
+      var inW=f3>=lo&&f3<=hi;
+      var emph=(d===0)&&(i2===5-st.str)&&f3===rf;
+      var r=emph?13:12;
+      var label,fs=12;
+      if(st.mode==='deg'){label=info[0];}
+      else if(st.mode==='nota'){label=names[pc];fs=names[pc].length>2?10.5:12;}
+      else{label=letters[pc]+info[2];fs=label.length>2?10.5:12;}
+      s+='<g style="opacity:'+(inW?1:0.28)+'"><circle cx="'+fx(f3)+'" cy="'+yy+'" r="'+r+'" style="fill:'+cv(d,'bg')+';stroke:'+cv(d,'bd')+'" stroke-width="'+(emph?2.5:1)+'"/><text x="'+fx(f3)+'" y="'+(yy+4)+'" text-anchor="middle" font-size="'+fs+'" font-weight="500" style="fill:'+cv(d,'tx')+'">'+label+'</text></g>';
+    }
+  }
+  document.getElementById('neck').innerHTML=s;
+  var lg='';
+  order().forEach(function(dd){
+    var inf=degs[dd],pcc=(st.key+dd)%12;
+    var nm=names[pcc]+inf[3]+' ('+letters[pcc]+inf[2]+')';
+    lg+='<li><span class="sw" style="background:'+cv(dd,'bg')+';border-color:'+cv(dd,'bd')+';color:'+cv(dd,'tx')+'">'+inf[1]+'</span>'+nm+'</li>';
+  });
+  document.getElementById('legend').innerHTML=lg;
+  var cuerda=st.str===5?'6ª':'5ª';
+  document.getElementById('info').textContent='Tónica '+names[st.key]+' en la cuerda '+cuerda+', traste '+(rf===0?'0 (al aire)':rf)+'. La zona sombreada es la posición cómoda cerca de la tónica; los círculos tenues son las mismas notas en otras zonas.';
+}
+
+function chordSvg(rp,qual,p){
+  var sh=shapes[p.s][qual],rr=p.r;
+  var X=31,GAP=11.5,TOP=18,RH=17,NR=3;
+  var s='<svg viewBox="0 0 100 78" role="img" aria-label="Diagrama de acorde">';
+  for(var j=0;j<=NR;j++){
+    var nut=(j===0&&rr===0);
+    s+='<line x1="'+X+'" y1="'+(TOP+j*RH)+'" x2="'+(X+5*GAP)+'" y2="'+(TOP+j*RH)+'" style="stroke:'+(nut?'var(--nut)':'var(--line-strong)')+'" stroke-width="'+(nut?3:1)+'"/>';
+  }
+  for(var i=0;i<6;i++){
+    s+='<line x1="'+(X+i*GAP)+'" y1="'+TOP+'" x2="'+(X+i*GAP)+'" y2="'+(TOP+NR*RH)+'" style="stroke:var(--string)" stroke-width="1"/>';
+  }
+  if(rr>0){s+='<text x="'+(X-8)+'" y="'+(TOP+RH/2+3.5)+'" font-size="9" text-anchor="end" style="fill:var(--muted);font-family:var(--mono)">tr.'+rr+'</text>';}
+  for(var i2=0;i2<6;i2++){
+    var v=sh[i2],x=X+i2*GAP;
+    if(v===null){
+      s+='<text x="'+x+'" y="'+(TOP-6)+'" font-size="9" text-anchor="middle" style="fill:var(--muted)">x</text>';
+      continue;
+    }
+    var fret=rr+v;
+    var pc=(openDown[i2]+fret)%12;
+    var iv=((pc-rp)%12+12)%12;
+    var role=iv===0?0:(iv===3||iv===4)?4:7;
+    if(rr===0&&v===0){
+      s+='<circle cx="'+x+'" cy="'+(TOP-8)+'" r="3.6" style="fill:none;stroke:'+cv(role,'bd')+'" stroke-width="1.5"/>';
+      continue;
+    }
+    var row=rr===0?v-1:v;
+    s+='<circle cx="'+x+'" cy="'+(TOP+row*RH+RH/2)+'" r="5.4" style="fill:'+cv(role,'bg')+';stroke:'+cv(role,'bd')+'" stroke-width="1.6"/>';
+  }
+  return s+'</svg>';
+}
+
+function drawChords(){
+  var rf=tonicFret();
+  var h='';
+  order().forEach(function(dd){
+    var inf=degs[dd];
+    var rp=(st.key+dd)%12;
+    var p=pick(rp);
+    var third=(inf[2]==='m'||inf[2]===DIM)?3:4;
+    var fifth=inf[2]===DIM?6:7;
+    var notes=[names[rp],names[(rp+third)%12],names[(rp+fifth)%12]].join(' – ');
+    h+='<div class="card"><header><span class="rn" style="color:'+cv(dd,'bd')+'">'+inf[1]+(inf[2]===DIM?DIM:'')+'</span><span class="nm">'+names[rp]+inf[3]+' ('+letters[rp]+inf[2]+')</span></header>'+chordSvg(rp,inf[2],p)+'<p class="notes">'+notes+'</p><p class="root">fundamental en la '+p.s+'ª cuerda</p></div>';
+  });
+  document.getElementById('cards').innerHTML=h;
+  var t=st.near?'Cada acorde usa la forma de Mi o de La cuya fundamental queda más cerca del traste '+(rf===0?'0':rf)+', donde está la tónica.':'Todos los acordes tienen la fundamental en la cuerda '+(st.str===5?'6ª':'5ª')+', como la tónica.';
+  document.getElementById('info2').textContent=t+' En los mayores y menores, la cejilla va en el traste indicado.';
+}
+
+function draw(){
+  drawNeck();drawChords();
+  setPressed('s6',st.str===5);setPressed('s5',st.str===4);
+  setPressed('m1',st.mode==='deg');setPressed('m2',st.mode==='nota');setPressed('m3',st.mode==='chord');
+  setPressed('f1',!st.full);setPressed('f2',st.full);
+  setPressed('p1',st.near);setPressed('p2',!st.near);
+}
+sel.addEventListener('change',function(){st.key=parseInt(sel.value,10);draw();});
+document.getElementById('s6').addEventListener('click',function(){st.str=5;draw();});
+document.getElementById('s5').addEventListener('click',function(){st.str=4;draw();});
+document.getElementById('m1').addEventListener('click',function(){st.mode='deg';draw();});
+document.getElementById('m2').addEventListener('click',function(){st.mode='nota';draw();});
+document.getElementById('m3').addEventListener('click',function(){st.mode='chord';draw();});
+document.getElementById('f1').addEventListener('click',function(){st.full=false;draw();});
+document.getElementById('f2').addEventListener('click',function(){st.full=true;draw();});
+document.getElementById('p1').addEventListener('click',function(){st.near=true;draw();});
+document.getElementById('p2').addEventListener('click',function(){st.near=false;draw();});
+draw();
+</script>
+</body>
+</html>
